@@ -11,11 +11,10 @@ db.once('open', function () {
     console.log("connected to database");
 });
 
-// // graphQL yes
-const graphQL = require("./schema/graphql");
+// graphQL yes
+const graphQL = require("./graphql/schema");
 
 //app.use(express.urlencoded({ extended: true }));
-
 app.use("/graphql", expressqlHTTP({
     schema: graphQL,
     graphiql: true
