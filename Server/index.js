@@ -17,8 +17,7 @@ const graphQL = require("./schema/graphql");
 //app.use(express.urlencoded({ extended: true }));
 
 app.use("/graphql", expressqlHTTP({
-    schema: graphQL.schema,
-    rootValue: graphQL.rootValue,
+    schema: graphQL,
     graphiql: true
 }));
 
