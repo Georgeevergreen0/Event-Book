@@ -21,13 +21,23 @@ let UserType = new GraphQLObjectType({
         email: {
             type: GraphQLString
         },
+        createdAt: {
+            type: GraphQLString
+        },
         createdEvent: {
             type: new GraphQLList(EventType),
             resolve: async (parent) => {
-                let events = await Event.find({ creator: parent._id });
+                let events = await Event.find({ createdBy: parent._id });
                 return events
             }
-        }
+        },
+        bookedEvent: {
+            type: new GraphQLList(EventType),
+            resolve: async (parent) => {
+                let events = await Event.find({ bookedBy: parent._id });
+                return events
+            }
+        },
 
     })
 })
@@ -47,16 +57,26 @@ let EventType = new GraphQLObjectType({
         price: {
             type: GraphQLFloat
         },
-        creator: {
+        date: {
             type: GraphQLString
         },
-        date: {
+        createdAt: {
+            type: GraphQLString
+        },
+        updatedAt: {
             type: GraphQLString
         },
         createdBy: {
             type: UserType,
             resolve: async (parent) => {
-                let user = await User.findById(parent.creator);
+                let user = await User.findById(parent.createdBy);
+                return user
+            }
+        },
+        bookedBy: {
+            type: new GraphQLList(UserType),
+            resolve: async (parent) => {
+                let user = await User.find({ _id: { $in: parent.bookedBy } });
                 return user
             }
         }

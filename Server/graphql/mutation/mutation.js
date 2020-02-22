@@ -1,19 +1,20 @@
 const {
     GraphQLObjectType,
     GraphQLFloat,
-    GraphQLString
+    GraphQLString,
+    GraphQLID
 } = require("graphql");
 const bcrypt = require("bcryptjs");
 const User = require("../../model/userModel");
 const Event = require("../../model/eventModel");
-const schemaType = require("../schemaType/schemaType");
+const { UserType, EventType } = require("../schemaType/schemaType");
 
 
 let Mutation = new GraphQLObjectType({
     name: "rootMutation",
     fields: {
         createUser: {
-            type: schemaType.UserType,
+            type: UserType,
             args: {
                 name: {
                     type: GraphQLString
@@ -44,7 +45,7 @@ let Mutation = new GraphQLObjectType({
             }
         },
         createEvent: {
-            type: schemaType.EventType,
+            type: EventType,
             args: {
                 title: {
                     type: GraphQLString
@@ -64,9 +65,37 @@ let Mutation = new GraphQLObjectType({
                     title,
                     description,
                     price,
-                    creator: "5e4fa529023a6c09840e8014",
+                    createdBy: "5e50d7a20b87ac1280dd41d6",
                     date
                 });
+                return event;
+            }
+        },
+        bookEvent: {
+            type: EventType,
+            args: {
+                _id: {
+                    type: GraphQLID
+                },
+            },
+            resolve: async (_, { _id }) => {
+                let event = await Event.findById(_id);
+                event.bookedBy.push("5e50d7a20b87ac1280dd41d6");
+                await event.save()
+                return event;
+            }
+        },
+        cancelEvent: {
+            type: EventType,
+            args: {
+                _id: {
+                    type: GraphQLID
+                },
+            },
+            resolve: async (_, { _id }) => {
+                let event = await Event.findById(_id);
+                event.bookedBy.pull("5e50d7a20b87ac1280dd41d6");
+                await event.save()
                 return event;
             }
         },
